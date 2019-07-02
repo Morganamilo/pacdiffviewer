@@ -21,7 +21,7 @@ arg_enum! {
     rename_all = "kebab-case",
     about = "pacfiles manager",
     template = "{bin} - {about}\n\nUsage: {usage}\n\nOptions:\n{unified}",
-    version_message = "display the verison",
+    version_message = "display the version",
     help_message = "display this help menu",
     raw(setting = "AppSettings::UnifiedHelpMessage"),
 )]
@@ -45,7 +45,7 @@ pub struct Config {
     #[structopt(
         long = "all",
         short = "a",
-        help = "manage all pacfiles instead of providing a slection menu"
+        help = "manage all pacfiles instead of providing a selection menu"
     )]
     pub all: bool,
     #[structopt(
