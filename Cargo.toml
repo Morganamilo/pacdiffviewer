@@ -1,0 +1,32 @@
+[package]
+name = "pacdiffviewer"
+version = "0.1.0"
+authors = ["morganamilo <morganamilo@gmail.com>"]
+edition = "2018"
+
+description = "pacfiles manager"
+homepage = "http://github.com/Morganamilo/pacdiffviewer"
+repository = "http://github.com/Morganamilo/pacdiffviewer"
+documentation = "https://docs.rs/pacdiffviewer"
+license = "GPL-3.0"
+keywords = ["archlinux", "arch", "pacsave", "pacnew", "pacman"]
+
+[dependencies]
+alpm = { git = "https://github.com/Morganamilo/alpm.rs", commit = "fa0d833819f8bd351ffc801e5dd95247a25d0dd6" }
+pacmanconf = "0.1.0"
+chrono = "0.4.7"
+natord = "1.0.9"
+structopt = { version = "0.2.18", features = ["wrap_help"] }
+atty = "0.2.11"
+ansi_term = "0.11.0"
+
+[build-dependencies]
+structopt = { version = "0.2.18", features = ["wrap_help"] }
+atty = "0.2.11"
+ansi_term = "0.11.0"
+
+[features]
+git = ["alpm/git"]
+
+[profile.release]
+lto = true
