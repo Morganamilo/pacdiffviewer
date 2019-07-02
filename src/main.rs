@@ -5,6 +5,8 @@ mod pacdiff;
 use crate::config::Config;
 use crate::pacdiff::run;
 
+use std::process;
+
 use structopt::StructOpt;
 
 fn main() {
@@ -13,5 +15,6 @@ fn main() {
 
     if let Err(err) = res {
         eprintln!("{} {}", config.color.error.paint("error:"), err);
+        process::exit(1);
     }
 }
