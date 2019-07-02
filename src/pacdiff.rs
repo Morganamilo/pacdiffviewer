@@ -426,7 +426,9 @@ fn find_backups_for_file(config: &Config, file: &Path) -> Result<(Vec<PathBuf>, 
     let read = match read {
         Ok(read) => read,
         Err(err) => {
-            eprintln!("{} {}: {}", e.paint("error:"), parent.display(), err);
+            if config.verbose {
+                eprintln!("{} {}: {}", e.paint("error:"), parent.display(), err);
+            }
             return Ok((newfiles, savefiles));
         }
     };
@@ -443,7 +445,9 @@ fn find_backups_for_file(config: &Config, file: &Path) -> Result<(Vec<PathBuf>, 
         let entry = match entry {
             Ok(entry) => entry,
             Err(err) => {
-                eprintln!("{} {}: {}", e.paint("error:"), parent.display(), err);
+                if config.verbose {
+                    eprintln!("{} {}: {}", e.paint("error:"), parent.display(), err);
+                }
                 continue;
             }
         };

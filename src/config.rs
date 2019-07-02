@@ -55,6 +55,12 @@ pub struct Config {
     )]
     pub output: bool,
     #[structopt(
+        long = "show hidden errors",
+        short = "v",
+        help = ""
+    )]
+    pub verbose: bool,
+    #[structopt(
         raw(possible_values = "&Action::variants()"),
         long = "action",
         raw(takes_value = "true"),
