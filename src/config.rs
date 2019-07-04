@@ -23,7 +23,7 @@ arg_enum! {
     template = "{bin} - {about}\n\nUsage: {usage}\n\nOptions:\n{unified}",
     version_message = "display the version",
     help_message = "display this help menu",
-    raw(setting = "AppSettings::UnifiedHelpMessage"),
+    raw(setting = "AppSettings::UnifiedHelpMessage")
 )]
 pub struct Config {
     #[structopt(
@@ -36,30 +36,33 @@ pub struct Config {
         help = "specify when to enable color"
     )]
     pub color: Colors,
+
     #[structopt(long = "dbpath", short = "b", help = "the dbpath to use")]
     pub dbpath: Option<String>,
+
     #[structopt(long = "root", short = "r", help = "the root dir to use")]
     pub root: Option<String>,
+
     #[structopt(long = "config", short = "c", help = "the pacman.conf to use")]
     pub config: Option<String>,
+
     #[structopt(
         long = "all",
         short = "a",
         help = "manage all pacfiles instead of providing a selection menu"
     )]
     pub all: bool,
+
     #[structopt(
         long = "output",
         short = "o",
         help = "print pacfiles instead of managing them"
     )]
     pub output: bool,
-    #[structopt(
-        long = "show hidden errors",
-        short = "v",
-        help = ""
-    )]
+
+    #[structopt(long = "show hidden errors", short = "v", help = "")]
     pub verbose: bool,
+
     #[structopt(
         raw(possible_values = "&Action::variants()"),
         long = "action",
@@ -67,6 +70,7 @@ pub struct Config {
         help = "automatically perform an action on each pacfile"
     )]
     pub action: Option<Action>,
+
     #[structopt(
         env = "DIFFPROG",
         long = "diffprog",
@@ -75,6 +79,21 @@ pub struct Config {
         help = "diff program to use"
     )]
     pub diffprog: String,
+
+    #[structopt(
+        long = "nosudoedit",
+        help = "don't use sudo -e to open the editor under your user account"
+    )]
+    pub nosudoedit: bool,
+
+    #[structopt(
+        env = "SUDO_USER",
+        long = "sudouser",
+        short = "u",
+        help = "user to change to when editing files"
+    )]
+    pub sudouser: Option<String>,
+
     pub targets: Vec<String>,
 }
 

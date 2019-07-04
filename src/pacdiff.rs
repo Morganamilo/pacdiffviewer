@@ -1,6 +1,7 @@
 use crate::config::Config;
 use crate::error::{Error, Result};
 
+use std::env;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -33,8 +34,8 @@ pub fn run(config: &Config) -> Result<()> {
     if let Some(ref db_path) = config.dbpath {
         pacconf.db_path = db_path.clone();
     }
-    let alpm = Alpm::new(pacconf.root_dir.as_str(), &pacconf.db_path.as_str())
-        .map_err(|e| Error::AlpmInit(e, pacconf.root_dir.clone(), pacconf.db_path.clone()))?;
+    let alpm = Alpm::new(&pacconf.root_dir, &pacconf.db_path)
+        .map_err(|e| Error::AlpmInit(e, pacconf.root_dir, pacconf.db_path))?;
 
     let mut backups = get_backups(&config, &alpm)?;
 
@@ -117,39 +118,60 @@ impl Backup {
     }
 
     fn view(&self, config: &Config) -> Result<()> {
-        let mut diffprog = config.diffprog.split_whitespace();
-        let mut command = Command::new(diffprog.next().unwrap_or_default());
-        command.args(diffprog).arg(&self.file);
+        use std::ffi::OsString;
 
-        for file in &self.pacfiles {
-            command.arg(file);
+        let bin;
+        let mut args = Vec::<OsString>::new();
+
+        if config.nosudoedit || config.sudouser.is_none() {
+            let mut split = config.diffprog.split_whitespace();
+            bin = split.next().unwrap();
+            args.extend(split.map(|e| e.into()));
+            args.push(self.file.clone().into());
+            args.extend(self.pacfiles.iter().map(|p| p.into()));
+        } else {
+            let user = config.sudouser.as_ref().unwrap();
+            bin = "sudo";
+
+            args.push(format!("SUDO_EDITOR={}", &config.diffprog).into());
+            args.push("-u".into());
+            args.push(user.into());
+            args.push("sudo".into());
+            args.push("-e".into());
+            args.push(self.file.clone().into());
+            args.extend(self.pacfiles.iter().map(|p| p.into()));
         }
+
+        let mut command = Command::new(bin);
+        command.args(&args);
 
         let exit = match command.spawn() {
             Err(err) => {
-                let mut diffprog = config.diffprog.split_whitespace().map(|s| s.to_string());
-                let bin = diffprog.next().unwrap_or_default();
-                let mut args = diffprog.collect::<Vec<_>>();
-                args.push(self.file.display().to_string());
-                args.extend(self.pacfiles.iter().map(|f| f.display().to_string()));
-
-                return Err(Error::CommandFailed(bin, args, err));
+                return Err(Error::CommandFailed(
+                    bin.to_string(),
+                    args.iter()
+                        .map(|s| s.to_string_lossy().to_string())
+                        .collect(),
+                    err,
+                ));
             }
             Ok(o) => o,
         }
         .wait()?;
 
         if !exit.success() {
-            let mut diffprog = config.diffprog.split_whitespace().map(|s| s.to_string());
-            let bin = diffprog.next().unwrap_or_default();
-            let mut args = diffprog.collect::<Vec<_>>();
-            args.push(self.file.display().to_string());
-            args.extend(self.pacfiles.iter().map(|f| f.display().to_string()));
-
-            Err(Error::CommandNonZero(bin, args, exit.code()))
-        } else {
-            Ok(())
+            let e = config.color.error;
+            let err = Error::CommandNonZero(
+                bin.to_string(),
+                args.iter()
+                    .map(|s| s.to_string_lossy().to_string())
+                    .collect(),
+                exit.code(),
+            );
+            eprintln!("{} {}", e.paint("error:"), err);
         }
+
+        Ok(())
     }
 
     fn manage(&self, config: &Config, curr: usize, total: usize) -> Result<bool> {
@@ -436,7 +458,8 @@ fn find_backups_for_file(config: &Config, file: &Path) -> Result<(Vec<PathBuf>, 
     let filename = match file.file_name() {
         Some(o) => o,
         None => return Ok((newfiles, savefiles)),
-    }.to_string_lossy();
+    }
+    .to_string_lossy();
 
     let pacsave = format!("{}.pacnew", filename);
     let pacnew = format!("{}.pacsave", filename);
