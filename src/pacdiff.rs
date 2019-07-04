@@ -1,7 +1,6 @@
 use crate::config::Config;
 use crate::error::{Error, Result};
 
-use std::env;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -9,8 +8,8 @@ use std::process::Command;
 use std::{fs, io};
 
 use alpm::Alpm;
-
 use chrono::{DateTime, Utc};
+use which::which;
 
 #[derive(PartialEq)]
 enum Kind {
@@ -117,14 +116,14 @@ impl Backup {
         pacfiles
     }
 
-    fn view(&self, config: &Config) -> Result<()> {
+    fn diffprog(&self, config: &Config, diffprog: &str) -> Result<()> {
         use std::ffi::OsString;
 
         let bin;
         let mut args = Vec::<OsString>::new();
 
         if config.nosudoedit || config.sudouser.is_none() {
-            let mut split = config.diffprog.split_whitespace();
+            let mut split = diffprog.split_whitespace();
             bin = split.next().unwrap();
             args.extend(split.map(|e| e.into()));
             args.push(self.file.clone().into());
@@ -133,7 +132,7 @@ impl Backup {
             let user = config.sudouser.as_ref().unwrap();
             bin = "sudo";
 
-            args.push(format!("SUDO_EDITOR={}", &config.diffprog).into());
+            args.push(format!("SUDO_EDITOR={}", diffprog).into());
             args.push("-u".into());
             args.push(user.into());
             args.push("sudo".into());
@@ -172,6 +171,23 @@ impl Backup {
         }
 
         Ok(())
+    }
+
+    fn view(&self, config: &Config) -> Result<()> {
+        if let Some(ref diffprog) = config.diffprog {
+            self.diffprog(config, diffprog)
+        } else {
+            for diffprog in &["vim -d", "git diff --no-index", "diff"] {
+                let bin = diffprog.split_whitespace().next().unwrap();
+                if which(bin).is_ok() {
+                    self.diffprog(config, diffprog)?;
+                    return Ok(());
+                }
+            }
+
+            eprintln!("no suitable diff program found");
+            Ok(())
+        }
     }
 
     fn manage(&self, config: &Config, curr: usize, total: usize) -> Result<bool> {

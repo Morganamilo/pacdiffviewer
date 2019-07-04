@@ -19,7 +19,7 @@ natord = "1.0.9"
 structopt = { version = "0.2.18", features = ["wrap_help"] }
 atty = "0.2.11"
 ansi_term = "0.11.0"
-nix = "0.14.1"
+which = "2.0.1"
 
 [build-dependencies]
 structopt = { version = "0.2.18", features = ["wrap_help"] }

@@ -75,10 +75,9 @@ pub struct Config {
         env = "DIFFPROG",
         long = "diffprog",
         short = "d",
-        default_value = "vim -d",
         help = "diff program to use"
     )]
-    pub diffprog: String,
+    pub diffprog: Option<String>,
 
     #[structopt(
         long = "nosudoedit",
