@@ -25,11 +25,8 @@ struct Backup {
 }
 
 pub fn run(config: &Config) -> Result<()> {
-    let mut pacconf = pacmanconf::Config::with_opts(
-        None,
-        config.config.as_ref().map(|s| s.as_str()),
-        config.root.as_ref().map(|s| s.as_str()),
-    )?;
+    let mut pacconf =
+        pacmanconf::Config::with_opts(None, config.config.as_deref(), config.root.as_deref())?;
     if let Some(ref db_path) = config.dbpath {
         pacconf.db_path = db_path.clone();
     }
@@ -407,9 +404,8 @@ fn get_backups(config: &Config, alpm: &Alpm) -> Result<Vec<Backup>> {
             match alpm.localdb().pkg(target.clone()) {
                 Ok(p) => pkgs.push(p),
                 Err(_) => eprintln!(
-                    "{} {}: {}",
+                    "{} target not found: {}",
                     e.paint("error:"),
-                    "target not found",
                     b.paint(target)
                 ),
             }

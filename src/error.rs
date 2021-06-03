@@ -35,8 +35,7 @@ impl fmt::Display for Error {
                 } else {
                     write!(
                         fmt,
-                        "command failed: exited {}: '{} {}'",
-                        "terminated by signal",
+                        "command failed: terminated by signal: '{} {}'",
                         bin,
                         args.join(" ")
                     )
