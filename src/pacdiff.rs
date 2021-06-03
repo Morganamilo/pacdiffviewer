@@ -33,7 +33,7 @@ pub fn run(config: &Config) -> Result<()> {
     if let Some(ref db_path) = config.dbpath {
         pacconf.db_path = db_path.clone();
     }
-    let alpm = Alpm::new(&pacconf.root_dir, &pacconf.db_path)
+    let alpm = Alpm::new(&*pacconf.root_dir, &*pacconf.db_path)
         .map_err(|e| Error::AlpmInit(e, pacconf.root_dir, pacconf.db_path))?;
 
     let mut backups = get_backups(&config, &alpm)?;
@@ -401,7 +401,7 @@ fn get_backups(config: &Config, alpm: &Alpm) -> Result<Vec<Backup>> {
     let b = config.color.bold;
 
     if config.targets.is_empty() {
-        pkgs.extend(alpm.localdb().pkgs()?);
+        pkgs.extend(alpm.localdb().pkgs());
     } else {
         for target in &config.targets {
             match alpm.localdb().pkg(target.clone()) {

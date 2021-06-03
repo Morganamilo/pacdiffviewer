@@ -12,19 +12,19 @@ license = "GPL-3.0"
 keywords = ["archlinux", "arch", "pacsave", "pacnew", "pacman"]
 
 [dependencies]
-alpm = { git = "https://github.com/Morganamilo/alpm.rs", rev = "fa0d833819f8bd351ffc801e5dd95247a25d0dd6" }
-pacmanconf = "0.1.0"
-chrono = "0.4.7"
+alpm = "2.0.3"
+pacmanconf = "1.0.0"
+chrono = "0.4.19"
 natord = "1.0.9"
-structopt = { version = "0.2.18", features = ["wrap_help"] }
-atty = "0.2.11"
-ansi_term = "0.11.0"
-which = "2.0.1"
+structopt = { version = "0.3.21", features = ["wrap_help"] }
+atty = "0.2.14"
+ansi_term = "0.12.1"
+which = "4.1.0"
 
 [build-dependencies]
-structopt = { version = "0.2.18", features = ["wrap_help"] }
-atty = "0.2.11"
-ansi_term = "0.11.0"
+structopt = { version = "0.3.21", features = ["wrap_help"] }
+atty = "0.2.14"
+ansi_term = "0.12.1"
 
 [features]
 git = ["alpm/git"]

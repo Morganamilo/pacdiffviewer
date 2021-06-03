@@ -23,16 +23,16 @@ arg_enum! {
     template = "{bin} - {about}\n\nUsage: {usage}\n\nOptions:\n{unified}",
     version_message = "display the version",
     help_message = "display this help menu",
-    raw(setting = "AppSettings::UnifiedHelpMessage")
+    setting = AppSettings::UnifiedHelpMessage
 )]
 pub struct Config {
     #[structopt(
-        raw(possible_values = "&[\"never\", \"auto\", \"always\"]"),
-        parse(from_str = "parse_color"),
+        possible_values = &["never", "auto", "always"],
+        parse(from_str = parse_color),
         long = "color",
         default_value = "auto",
-        raw(takes_value = "true"),
-        raw(require_equals = "true"),
+        takes_value = true,
+        require_equals = true,
         help = "specify when to enable color"
     )]
     pub color: Colors,
@@ -64,9 +64,9 @@ pub struct Config {
     pub verbose: bool,
 
     #[structopt(
-        raw(possible_values = "&Action::variants()"),
+        possible_values = &Action::variants(),
         long = "action",
-        raw(takes_value = "true"),
+        takes_value = true,
         help = "automatically perform an action on each pacfile"
     )]
     pub action: Option<Action>,
