@@ -12,17 +12,17 @@ license = "GPL-3.0"
 keywords = ["archlinux", "arch", "pacsave", "pacnew", "pacman"]
 
 [dependencies]
-alpm = "2.0.3"
+alpm = "2.1.1"
 pacmanconf = "1.0.0"
 chrono = "0.4.19"
 natord = "1.0.9"
-structopt = { version = "0.3.21", features = ["wrap_help"] }
+structopt = { version = "0.3.23", features = ["wrap_help"] }
 atty = "0.2.14"
 ansi_term = "0.12.1"
-which = "4.1.0"
+which = "4.2.2"
 
 [build-dependencies]
-structopt = { version = "0.3.21", features = ["wrap_help"] }
+structopt = { version = "0.3.23", features = ["wrap_help"] }
 atty = "0.2.14"
 ansi_term = "0.12.1"
 
