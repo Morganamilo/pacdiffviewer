@@ -160,7 +160,7 @@ dependencies = [
 
 [[package]]
 name = "pacdiffviewer"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "alpm",
  "ansi_term 0.12.1",
